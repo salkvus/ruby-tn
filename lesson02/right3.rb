@@ -1,26 +1,25 @@
 print"Введите 1-ую сторону треугольника:"
-a = gets.chomp.to_f
+a = gets.to_f
 print"Введите 2-ую сторону треугольника:"
-b = gets.chomp.to_f
+b = gets.to_f
 print"Введите 3-ую сторону треугольника:"
-c = gets.chomp.to_f
+c = gets.to_f
 
 # Проверка условия существования треугольника
 if a + b <= c || a + c <= b || b + c <= a
-	abort "Такого треугольника не существует"
+  abort "Такого треугольника не существует"
 end
 
-#  Присваеиваем стороне a наибольшее значение
-a, b = b, a if b > a
-a, c = c, a if c > a
+#  Сортируем стороны по возрастанию
+a, b, c = [a, b, c].sort!
 
-is_right = (a**2 == b**2 + c**2)
-is_eq_bc = a == b || b == c || a == c
-is_eq_abc = a == b && b == c
+is_right = (c**2 == a**2 + b**2)
+is_isosceles = a == b || b == c || a == c
+is_equilateral = a == b && b == c
 
 puts "Треугольник прямоугольный" if is_right
-puts "Треугольник равнобедренный" if is_eq_bc && !is_eq_abc
-puts "Треугольник равнобедренный и равносторонний, но не прямоугольный" if is_eq_abc
+puts "Треугольник равнобедренный" if is_isosceles && !is_equilateral
+puts "Треугольник равнобедренный и равносторонний, но не прямоугольный" if is_equilateral
 
 	
 
