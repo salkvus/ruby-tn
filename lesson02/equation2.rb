@@ -13,9 +13,12 @@ elsif a == 0 && b == 0 && c == 0
   exit 0
 end
 
-if d == 0
-  x1 = x2 = -b / (2.0 * a)
-  puts "D = #{d} #{x1}"
+if a == 0 && b != 0 && c != 0
+  x = -c / (1.0 * b)
+  puts "D = #{d} #{x}"
+elsif d == 0
+  x = -b / (2.0 * a)
+  puts "D = #{d} #{x}"
 else
   d_sqrt = Math.sqrt(d)
   x1 = (-b - d_sqrt) / (2.0 * a)
