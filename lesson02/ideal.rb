@@ -1,4 +1,4 @@
-print"Введите свое имя:"
+print "Введите свое имя:"
 user_name = gets.chomp
 print "Введите свой рост:"
 user_height = gets.to_i
