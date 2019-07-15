@@ -1,9 +1,8 @@
-ary_fib = Array.new(100)
-(0..100).each do |i|
-  if i <= 1
-    ary_fib[i] = i
-  else
-    ary_fib[i] = ary_fib[i - 1] + ary_fib[i - 2]
-  end
+ary_fib = [0, 1]
+fib1, fib2 = ary_fib[0], ary_fib[1]
+while fib1 + fib2 <= 100
+  ary_fib << fib1 + fib2
+  fib1, fib2 = fib2, ary_fib.last
 end
+p ary_fib
 

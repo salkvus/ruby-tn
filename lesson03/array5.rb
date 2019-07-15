@@ -1,1 +1,2 @@
-ary = (10..100).select { |x| x if (x % 5).zero? }
+ary = (10..100).step(5).to_a
+

@@ -10,17 +10,12 @@ loop do
   print "Введите количество: "
   quantity = gets.to_f
 
-  if cart.key?(product)
-    cart[product][price] = quantity
-  else
-    cart[product] = { price => quantity }
-  end
+  cart[product] = { price: price, quantity: quantity }
 end
 
-total = 0
 cart.each do |product, item|
-  item_sum = item.collect { |price, quantity| price * quantity }.reduce(:+)
+  item_sum = item[:price] * item[:quantity]
   puts "#{product}  #{item} Итого по товару: #{item_sum}"
-  total += item_sum
 end
+total = cart.collect { |_, item| item[:price] * item[:quantity] }.reduce(:+)
 puts "Общий итого: #{total}"
