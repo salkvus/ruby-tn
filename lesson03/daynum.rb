@@ -12,7 +12,7 @@ month = gets.to_i
 print "Введите год: "
 year = gets.to_i
 
-is_leap = leap_year? year
+is_leap = leap_year?(year)
 month_days = [31, (is_leap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 days_num = month_days.take(month - 1).reduce(:+) + day
 p days_num

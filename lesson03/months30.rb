@@ -1,15 +1,15 @@
 months = {
-  "Январь" => 31,
-  "Февраль" => 28,
-  "Март" => 31,
-  "Апрель" => 30,
-  "Май" => 31,
-  "Июнь" => 30,
-  "Июль" => 31,
-  "Август" => 31,
-  "Сентябрь" => 31,
-  "Октябрь" => 31,
-  "Ноябрь" => 30,
-  "Декабрь" => 31
+  january: 31,
+  february: 28,
+  march: 31,
+  april: 30,
+  may: 31,
+  june: 30,
+  july: 31,
+  august: 31,
+  september: 31,
+  october: 31,
+  november: 30,
+  december: 31
 }
 months.each { |month, days| puts month if days == 30 }

@@ -1,7 +1,7 @@
 vowels = %w[а е ё и о у э ю я]
 hash_vowels = {}
 ('а'..'я').each_with_index do |ch, index|
-  if vowels.include? ch
+  if vowels.include?(ch)
     shift = ch <= 'е' ? 0 : 1
     hash_vowels[ch] = index + shift
   end
