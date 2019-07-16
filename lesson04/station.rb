@@ -13,9 +13,9 @@ class Station
     train.station = self
   end
   
-  def departure_train(train)
+  def departure_train(train, station)
     trains[train.type].delete(train)
-    train.station = self
+    train.station = station
   end
 
   def all_trains
