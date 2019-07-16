@@ -47,9 +47,14 @@ rt2 = Route.new(st1, st3)
 rt2.add(st2)
 st2.arrive_train(tr2)
 
+puts "Get all trains:"
+puts st2.all_trains
+puts "Get trains by type:"
+puts st2.trains_by_type(:passenger)
+
 puts "Train #{tr1.number} station: #{ tr1.station.name}"
 puts "Train #{tr2.number} station: #{ tr2.station.name}"
-puts "Show all trains:"
-st2.show_trains
 puts "Show trains by type:"
 st2.show_trains_by_type(:cargo)
+puts "Show all trains:"
+st2.show_all_trains

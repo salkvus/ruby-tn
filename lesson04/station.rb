@@ -18,10 +18,16 @@ class Station
     train.station = self
   end
 
-  def show_trains
-    trains.each do |type, trains_list| 
-      trains_list.each { |train| train.show }
-    end
+  def all_trains
+    trains.values.flatten(1)
+  end
+
+  def trains_by_type(type)
+    trains[type]
+  end
+
+  def show_all_trains
+    all_trains.each { |train| train.show }
   end
 
   def show_trains_by_type(type)
