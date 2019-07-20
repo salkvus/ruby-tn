@@ -1,6 +1,8 @@
 require_relative 'train'
 
 class Station
+  ERROR_DEPARTURE_METHOD = "Error in departure_train method"
+  ERROR_ARRIVE_METHOD = "Error in arrive_train method"
   attr_reader :name, :trains
 
   def initialize(name)
@@ -9,15 +11,18 @@ class Station
   end
 
   def arrive_train(train)
-    raise StationDepartureException.new(train, self, "Error in arrive_train method") unless train.current_station == self
+    if trains.include?(train)
+      raise StationDepartureException.new(train, self, ERROR_ARRIVE_METHOD)
+    end
 
-    trains << train unless trains.include?(train)
+    trains << train
   end
   
   def departure_train(train)
-    raise StationDepartureException.new(train, self, "Error in departure_train method") unless trains.include?(train)
+    unless trains.include?(train)
+      raise StationDepartureException.new(train, self, ERROR_DEPARTURE_METHOD)
+    end
 
-    train.go_forward
     trains.delete(train)
   end
 

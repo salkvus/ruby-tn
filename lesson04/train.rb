@@ -24,8 +24,10 @@ class Train
     @carriages_count -= 1 if speed.zero? && carriages_count.positive?
   end
 
-  def accelerate(inc_speed)
-    @speed += inc_speed if speed + inc_speed <= MAX_SPEED
+  def accelerate(speed_increment)
+    return if speed + speed_increment > MAX_SPEED
+    @speed += speed_increment
+    @speed = 0 if speed < 0
   end
 
   def stop
@@ -39,28 +41,32 @@ class Train
   end
 
   def go_back
-    @current_station_index = route.stations.index(previous_station)
-    current_station.arrive_train(self)
+    if previous_station
+      current_station.departure_train(self)
+      previous_station.arrive_train(self)
+      @current_station_index -= 1
+    end
   end
 
   def go_forward
-    @current_station_index = route.stations.index(next_station)
-    current_station.arrive_train(self)
+    if next_station
+      current_station.departure_train(self)
+      next_station.arrive_train(self)
+      @current_station_index += 1
+    end
   end
 
   def current_station
-    return unless route
     route.stations[@current_station_index]
   end
 
   def previous_station
-    return unless route
-    route.stations[@current_station_index - 1] unless current_station == route.start_station
+    return unless @current_station_index.positive?
+    route.stations[@current_station_index - 1]
   end
 
   def next_station
-    return unless route
-    route.stations[@current_station_index + 1] unless current_station == route.end_station
+    route.stations[@current_station_index + 1]
   end
 end
 
