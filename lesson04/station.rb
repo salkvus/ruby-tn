@@ -1,8 +1,7 @@
-require_relative 'train'
-
 class Station
   ERROR_DEPARTURE_METHOD = "Error in departure_train method"
   ERROR_ARRIVE_METHOD = "Error in arrive_train method"
+  
   attr_reader :name, :trains
 
   def initialize(name)

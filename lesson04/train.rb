@@ -1,9 +1,7 @@
-require_relative 'station'
-require_relative 'route'
-
 class Train
   TYPES = %i[cargo passenger]
   MAX_SPEED = 80
+
   attr_reader :number, :type, :carriages_count, :route, :speed
   
   def initialize(number, type, carriages_count = 0)
@@ -41,19 +39,17 @@ class Train
   end
 
   def go_back
-    if previous_station
-      current_station.departure_train(self)
-      previous_station.arrive_train(self)
-      @current_station_index -= 1
-    end
+    return unless previous_station
+    current_station.departure_train(self)
+    previous_station.arrive_train(self)
+    @current_station_index -= 1
   end
 
   def go_forward
-    if next_station
-      current_station.departure_train(self)
-      next_station.arrive_train(self)
-      @current_station_index += 1
-    end
+    return unless next_station
+    current_station.departure_train(self)
+    next_station.arrive_train(self)
+    @current_station_index += 1
   end
 
   def current_station
