@@ -23,6 +23,6 @@ class Route
   end
 
   def show
-    stations.map.with_index { |station, index| puts index.to_s.rjust(4) + " - " + station.name }
+    stations.each.with_index { |station, index| puts (index + 1).to_s.rjust(4) + " - " + station.name }
   end
 end

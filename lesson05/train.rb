@@ -22,16 +22,6 @@ class Train
     wagons.delete(wagon)
   end
 
-  def unhook_wagon_by_number(number)
-    return unless speed.zero?
-
-    wagon = wagons.select { |wagon| wagon.number == number }.pop
-    return puts "Не найден вагон с номером  #{number}" if wagon.nil?
-    
-    wagon.train = nil
-    wagons.delete(wagon)
-  end
-
   def accelerate(speed_increment)
     return if speed + speed_increment > max_speed
 
