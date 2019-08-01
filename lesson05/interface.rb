@@ -1,6 +1,21 @@
 
 class Interface
-  
+
+  def show_main_menu(actions)
+    actions.each.with_index(1) do |item, index|
+      if index == actions.length
+        puts "0. #{item.label}"
+      else
+        puts "#{index}. #{item.label}"
+      end
+    end
+    print 'Выберите номер операции: '
+  end
+
+  def clear
+    system('clear')
+  end
+
   def prompt_station_name
     print 'Введите название станции: '
   end
@@ -79,37 +94,37 @@ class Interface
     gets.to_i
   end
     
-  def show_routes(railroad)
-    return puts "Маршрутов не найдено" if railroad.routes.length.zero?
+  def show_routes(routes)
+    return puts("Маршрутов не найдено") if routes.length.zero?
 
-    railroad.routes.each.with_index do |route, index|
-      puts "Маршрут " + (index + 1).to_s
+    routes.each.with_index(1) do |route, index|
+      puts "Маршрут " + index.to_s
       route.show
     end
   end
   
-  def show_stations(railroad)
-    return puts "Станций не найдено" if railroad.stations.length.zero?
+  def show_stations(stations)
+    return puts("Станций не найдено") if stations.length.zero?
 
     puts "Станции:"
-    puts railroad.stations.map.with_index { |station, index| (index + 1).to_s.rjust(4) + " - " + station.name }
+    puts stations.map.with_index(1) { |station, index| index.to_s.rjust(4) + " - " + station.name }
   end
 
   def show_trains_on_station(station)
-    return puts "На станции #{station.name} нет поездов" if station.trains.length.zero?
+    return puts("На станции #{station.name} нет поездов".rjust(4)) if station.trains.length.zero?
 
-    puts "Поезда на станции #{station.name}:"
-    station.trains.each.with_index do |train, index|
-      show_train(train, index + 1)
+    puts "Поезда на станции #{station.name}:".rjust(4)
+    station.trains.each.with_index(1) do |train, index|
+      show_train(train, index)
     end
   end
 
-  def show_trains(railroad)
-    return puts "Поездов не найдено" if railroad.trains.length.zero?
+  def show_trains(trains)
+    return puts("Поездов не найдено") if trains.length.zero?
 
     puts "Поезда:"
-    railroad.trains.map.with_index do |train, index|
-      show_train(train, index + 1)
+    trains.map.with_index(1) do |train, index|
+      show_train(train, index)
     end
   end
 

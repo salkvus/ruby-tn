@@ -14,11 +14,14 @@ class Route
   end
 
   def add(station)
-    @stations.insert(-2, station)
+    return @stations.insert(-2, station) if @stations.length >= 2
+
+    @stations << station
   end
 
   def delete(station)
     return if [start_station, end_station].include?(station)
+
     stations.delete(station)
   end
 

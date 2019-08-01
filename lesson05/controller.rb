@@ -8,23 +8,23 @@ require_relative 'passenger_wagon'
 require_relative 'cargo_wagon'
 
 class Controller
-  Action = Struct.new(:label, :handler)
+  Action = Struct.new(:label, :handler, :options)
 
   ACTIONS = [
-    Action.new('Создать станцию', :cmd_create_station),
-    Action.new('Создать поезд', :cmd_create_train),
-    Action.new('Создать маршрут', :cmd_create_route),
-    Action.new('Добавить станцию к маршруту', :cmd_add_station_to_route),
-    Action.new('Убрать станцию из маршрута', :cmd_delete_station_from_route),
-    Action.new('Назначить маршрут поезду', :cmd_assign_route_to_train),
-    Action.new('Добавить вагон к поезду', :cmd_hook_train_wagon),
-    Action.new('Отцепить вагон от поезда', :cmd_unhook_train_wagon),
-    Action.new('Переместить поезд вперед', :cmd_go_forward),
-    Action.new('Переместить поезд назад', :cmd_go_back),
-    Action.new('Показать список станций', :cmd_show_stations),
-    Action.new('Показать список поездов на станции', :cmd_show_trains_on_station),
-    Action.new('Показать список маршрутов', :cmd_show_routes),
-    Action.new('Показать список поездов', :cmd_show_trains),
+    Action.new('Создать станцию', :cmd_create_station, {clear_result: true}),
+    Action.new('Создать поезд', :cmd_create_train, {clear_result: true}),
+    Action.new('Создать маршрут', :cmd_create_route, {clear_result: true}),
+    Action.new('Добавить станцию к маршруту', :cmd_add_station_to_route, {clear_result: true}),
+    Action.new('Убрать станцию из маршрута', :cmd_delete_station_from_route, {clear_result: true}),
+    Action.new('Назначить маршрут поезду', :cmd_assign_route_to_train, {clear_result: true}),
+    Action.new('Добавить вагон к поезду', :cmd_hook_train_wagon, {}),
+    Action.new('Отцепить вагон от поезда', :cmd_unhook_train_wagon, {}),
+    Action.new('Переместить поезд вперед', :cmd_go_forward, {clear_result: true}),
+    Action.new('Переместить поезд назад', :cmd_go_back, {clear_result: true}),
+    Action.new('Показать список станций', :cmd_show_stations, {}),
+    Action.new('Показать список поездов на станции', :cmd_show_trains_on_station, {}),
+    Action.new('Показать список маршрутов', :cmd_show_routes, {}),
+    Action.new('Показать список поездов', :cmd_show_trains, {}),
     Action.new('Выйти', :cmd_exit_menu)
   ]
 
@@ -33,22 +33,24 @@ class Controller
     @railroad = Railroad.new
   end
 
-  def run(id)
-    self.send(ACTIONS[id].handler)
-  end
+  def run
+    @interface.clear
+    loop do
+      @interface.show_main_menu(ACTIONS)
+      cmd_id = @interface.enter_number
+      break if cmd_id.zero?
 
-  def show_menu
-    ACTIONS.each_with_index do |item, index|
-      if index == ACTIONS.length - 1
-        puts "0. #{item.label}"
-      else
-        puts "#{index + 1}. #{item.label}"
-      end
+      action = get_action(cmd_id)
+      send(action.handler)
+      @interface.clear if action.options[:clear_result]
     end
-    print 'Выберите номер операции: '
   end
 
   private 
+
+  def get_action(cmd_id)
+    ACTIONS[cmd_id - 1]
+  end
 
   def cmd_create_station
     @interface.prompt_station_name
@@ -57,11 +59,12 @@ class Controller
   end
 
   def cmd_create_route
-    @interface.show_stations(@railroad)
+    stations = @railroad.stations
+    @interface.show_stations(stations)
     @interface.prompt_start_station
-    start_station = select_from_array(@railroad.stations)
+    start_station = select_from_array(stations)
     @interface.prompt_end_station
-    end_station = select_from_array(@railroad.stations)
+    end_station = select_from_array(stations)
     return if start_station.nil? || end_station.nil?
     return if start_station == end_station
 
@@ -79,80 +82,78 @@ class Controller
   end
 
   def cmd_add_station_to_route
-    @interface.show_routes(@railroad)
+    @interface.show_routes(@railroad.routes)
     return if @railroad.routes.length.zero?
 
     @interface.prompt_route_select
     route = select_from_array(@railroad.routes)
     return if route.nil?
     
-    @interface.show_stations(@railroad)
+    stations = @railroad.stations.select { |station| not route.stations.include?(station)}
+    return if stations.length.zero?
+
+    @interface.show_stations(stations)
     @interface.prompt_station_add_to_route
-    station = select_loop_from_array(@railroad.stations)
+    station = select_loop_from_array(stations)
     return if station.nil?
+
     @railroad.add_station_to_route(route, station)
   end
 
   def cmd_delete_station_from_route
-    @interface.show_routes(@railroad)
+    @interface.show_routes(@railroad.routes)
     return if @railroad.routes.length.zero?
 
     @interface.prompt_route_select
     route = select_from_array(@railroad.routes)
     return if route.nil?
     
-    @interface.show_stations(@railroad)
+    @interface.show_stations(route.stations)
     @interface.prompt_station_delete_from_route
-    station = select_loop_from_array(@railroad.stations)
+    station = select_loop_from_array(route.stations)
     return if station.nil?
     
     @railroad.delete_station_from_route(route, station)
   end
   
   def cmd_assign_route_to_train
-    @interface.show_routes(@railroad)
+    @interface.show_routes(@railroad.routes)
     @interface.prompt_route_select
     route = select_from_array(@railroad.routes)
     return if route.nil?
 
-    @interface.show_trains(@railroad)
+    @interface.show_trains(@railroad.trains)
     @interface.prompt_train_for_assign_route
     train = select_loop_from_array(@railroad.trains)
+    return if train.nil?
+
     @railroad.assign_route_to_train(route, train)
   end
   
   def cmd_hook_train_wagon
-    @interface.show_trains(@railroad)
+    @interface.show_trains(@railroad.trains)
     @interface.prompt_train_to_hook_wagon
     train = select_loop_from_array(@railroad.trains)
     return if train.nil?
 
     @interface.prompt_wagon_number_select
-    number = @interface.enter_number
-    return if number.nil?
+    wagon_number = @interface.enter_number
+    return if wagon_number.nil?
 
-    if train.type == :passenger
-      wagon = PassengerWagon.new(number)
-    else
-      wagon = CargoWagon.new(number)
-    end
-    train.hook_wagon(wagon) unless wagon.nil?
+    @railroad.hook_train_wagon(train, wagon_number)
   end
 
   def cmd_unhook_train_wagon
-    @interface.show_trains(@railroad)
+    @interface.show_trains(@railroad.trains)
     @interface.prompt_train_to_unhook_wagon
     train = select_loop_from_array(@railroad.trains)
     return if train.nil?
 
     @interface.prompt_wagon_number_select
-    number = @interface.enter_number
-    return if number.nil?
+    wagon_number = @interface.enter_number
+    return if wagon_number.nil?
 
-    wagon = train.wagons.select { |wagon| wagon.number == number }.pop
-    return puts "Не найден вагон с номером  #{number}" if wagon.nil?
-
-    train.unhook_wagon(wagon)
+    @railroad.unhook_train_wagon(train, wagon_number)
   end
 
   def cmd_go_forward
@@ -164,11 +165,11 @@ class Controller
   end
 
   def cmd_show_stations
-    @interface.show_stations(@railroad)
+    @interface.show_stations(@railroad.stations)
   end
 
   def cmd_show_trains_on_station
-    @interface.show_stations(@railroad)
+    @interface.show_stations(@railroad.stations)
     @interface.prompt_station_select
     station = select_loop_from_array(@railroad.stations)
     return if station.nil?
@@ -177,15 +178,15 @@ class Controller
   end
 
   def cmd_show_routes
-    @interface.show_routes(@railroad)
+    @interface.show_routes(@railroad.routes)
   end
 
   def cmd_show_trains
-    @interface.show_trains(@railroad)
+    @interface.show_trains(@railroad.trains)
   end
   
   def train_go_forward
-    @interface.show_trains(@railroad)
+    @interface.show_trains(@railroad.trains)
     @interface.prompt_train_select
     train = select_loop_from_array(@railroad.trains)
     return if train.nil?
@@ -194,7 +195,7 @@ class Controller
   end
   
   def train_go_back
-    @interface.show_trains(@railroad)
+    @interface.show_trains(@railroad.trains)
     @interface.prompt_train_select
     train = select_loop_from_array(@railroad.trains)
     return if train.nil?
@@ -203,31 +204,20 @@ class Controller
   end
 
   def select_from_array(array)
-    index = @interface.enter_number - 1
+    index = @interface.enter_number
     return if index.negative?
 
-    array[index]
+    array[index - 1]
   end
 
   def select_loop_from_array(array)
     loop do
-      index = @interface.enter_number - 1
-      return array[index] unless index.negative?
+      index = @interface.enter_number
+      return array[index - 1] unless index.negative?
       break if @interface.check_operation_cancel
     end
   end
 end
 
-controller = Controller.new
-system('clear')
-loop do
-  controller.show_menu
-  cmd_id = gets.to_i
-  break if cmd_id.zero?
-  controller.run(cmd_id - 1)
-  if [11, 12, 13, 14].include?(cmd_id)
-    puts
-  else
-    system('clear')
-  end
-end
+Controller.new.run
+

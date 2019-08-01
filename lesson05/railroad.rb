@@ -38,8 +38,31 @@ class Railroad
   end
 
   def assign_route_to_train(route, train)
-    return if train.nil?
-
     train.route = route
+  end
+
+  def hook_train_wagon(train, wagon_number)
+    wagon = train.wagons.select { |wagon| wagon.number == wagon_number}.pop
+    unless wagon.nil?
+      puts "Уже есть вагон с номером #{wagon.number}".rjust(4)
+      return
+    end
+
+    if train.type == :passenger
+      wagon = PassengerWagon.new(wagon_number)
+    else
+      wagon = CargoWagon.new(wagon_number)
+    end
+    train.hook_wagon(wagon) unless wagon.nil?
+  end
+
+  def unhook_train_wagon(train, wagon_number)
+    wagon = train.wagons.select { |wagon| wagon.number == wagon_number }.pop
+    if wagon.nil?
+      puts "Не найден вагон с номером  #{wagon_number}"
+      return
+    end
+
+    train.unhook_wagon(wagon)
   end
 end
