@@ -5,7 +5,7 @@ class Train
   include Maker
   include InstanceCounter
   attr_reader :number, :route, :speed, :wagons
-  
+
   @@trains = []
 
   def self.find(train_number)
@@ -88,7 +88,7 @@ class Train
   end
 
   def initialize_train(train_number)
-    @number = number
+    @number = train_number
     @wagons = []
     @speed = 0
     @current_station_index = nil
