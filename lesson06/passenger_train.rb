@@ -3,7 +3,7 @@ require_relative 'Train'
 class PassengerTrain < Train
   include InstanceCounter
   WAGON_TYPES = %i(passenger)
-
+  
   attr_reader :type
 
   def initialize(train_number)

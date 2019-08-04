@@ -6,12 +6,10 @@ class Train
   include InstanceCounter
   attr_reader :number, :route, :speed, :wagons
   
-  class << self
-    @@trains = []
+  @@trains = []
 
-    def find(train_number)
-      @@trains.select { |train| train_number == train.number }.pop
-    end
+  def self.find(train_number)
+    @@trains.select { |train| train_number == train.number }.pop
   end
 
   def initialize(train_number)

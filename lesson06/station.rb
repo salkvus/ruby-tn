@@ -5,11 +5,9 @@ class Station
   ERROR_DEPARTURE_METHOD = "Error in departure_train method"
   ERROR_ARRIVE_METHOD = "Error in arrive_train method"
   
-  class << self 
-    @@stations = []
-    def all
-      @@stations
-    end
+  @@stations = []
+  def self.all
+    @@stations
   end
 
   attr_reader :name, :trains
