@@ -75,10 +75,10 @@ class Controller
     @interface.prompt_train_type
     train_class = select_from_array(Railroad::TRAIN_TYPES)
     @interface.prompt_train_number
-    number = @interface.enter_number
-    return if train_class.nil? || number.nil?
+    train_number = @interface.enter_string
+    return if train_class.nil? || train_number.nil?
 
-    @railroad.create_train(train_class, number)
+    @railroad.create_train(train_class, train_number)
   end
 
   def cmd_add_station_to_route

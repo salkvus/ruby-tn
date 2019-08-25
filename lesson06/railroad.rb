@@ -21,8 +21,8 @@ class Railroad
     @routes << Route.new(start_station, end_station)
   end
 
-  def create_train(train_class, number)
-    @trains << train_class.new(number)
+  def create_train(train_class, train_number)
+    @trains << train_class.new(train_number)
   end
 
   def add_station_to_route(route, station)
