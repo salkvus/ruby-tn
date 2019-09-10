@@ -12,44 +12,31 @@ class Railroad
   end
 
   def create_station(name)
-    station = Station.new(name)
-    raise StandardError.new(station.error) unless station.valid?
-
-    @stations << station
-    puts "Создана станция \"#{station.name}\""
+    @stations << Station.new(name)
+    puts "Создана станция \"#{self.stations[-1].name}\""
   end
 
   def create_route(start_station, end_station)
-    route = Route.new(start_station, end_station)
-    raise StandardError.new(route.error) unless route.valid?
-
-    @routes << route
-    if route.valid?
-      puts "Создан маршрут: "
-      route.show
-    end
-    puts
+    @routes << Route.new(start_station, end_station)
+    puts "Создан маршрут: "
+    self.routes[-1].show
   end
 
   def create_train(train_class, train_number)
-    raise StandardError.new("Create train error: invalid train class") if train_class.nil?
-    train = train_class.new(train_number)
-    raise StandardError.new(train.error) unless train.valid?
-
-    @trains << train
+    raise ArgumentError.new("Create train error: train class is nil") if train_class.nil?
+    @trains << train_class.new(train_number)
     puts "Создан поезд: "
-    train.show
+    trains[-1].show
   end
 
   def add_station_to_route(route, station)
-    raise StandardError.new("Adding station for route error: station #{station.name} was also included") if route.stations.include?(station)
-  
+    raise ArgumentError.new("Adding station for route error: route is nil") if route.nil?
+    raise ArgumentError.new("Adding station for route error: station #{station.name} was also included") if route.stations.include?(station)
     route.add(station)
   end
 
   def delete_station_from_route(route, station)
-    raise StandardError.new("Deleting station from route error: station #{station.name} is not included in route") unless route.stations.include?(station)
-  
+    raise ArgumentError.new("Deleting station from route error: station #{station.name} is not included in route") unless route.stations.include?(station)
     route.stations.delete(station)
   end
 
@@ -59,28 +46,15 @@ class Railroad
 
   def hook_train_wagon(train, wagon_number)
     wagon = train.wagons.select { |wagon| wagon.number == wagon_number}.pop
-    unless wagon.nil?
-      puts "Уже есть вагон с номером #{wagon.number}".rjust(4)
-      return
-    end
-
-    if train.type == :passenger
-      wagon = PassengerWagon.new(wagon_number)
-      raise StandardError.new(wagon.error) unless wagon.valid?
-    else
-      wagon = CargoWagon.new(wagon_number)
-      raise StandardError.new(wagon.error) unless wagon.valid?
-    end
-    train.hook_wagon(wagon) unless wagon.nil?
+    raise StandardError.new("Уже есть вагон с номером #{wagon.number}") if wagon.nil?
+    wagon = PassengerWagon.new(wagon_number) if train.type == :passenger
+    wagon = CargoWagon.new(wagon_number) if train.type == :cargo
+    train.hook_wagon(wagon)
   end
 
   def unhook_train_wagon(train, wagon_number)
     wagon = train.wagons.select { |wagon| wagon.number == wagon_number }.pop
-    if wagon.nil?
-      puts "Не найден вагон с номером  #{wagon_number}"
-      return
-    end
-
+    raise StandardError.new("Не найден вагон с номером  #{wagon_number}") if wagon.nil?
     train.unhook_wagon(wagon)
   end
 end

@@ -6,7 +6,7 @@ class Train
   include Maker
   include InstanceCounter
   include InstanceValidator
-  attr_reader :number, :route, :speed, :wagons, :error
+  attr_reader :number, :route, :speed, :wagons
 
   @@trains = {}
 
@@ -100,20 +100,12 @@ class Train
     @wagons = []
     @speed = 0
     @current_station_index = nil
+    validate!
     @@trains[train_number] = self
-    @error = ""
   end
   
   def validate!
-    @error = ""
-    if self.number.empty?
-      @error = "Train error: train number must not be empty"
-      raise StandardError.new(self.error)
-    end
-    if /[A-Fa-f0-9]{3}-?\d{2}/.match(self.number).nil?
-      @error = "Train error: train number is not valid"
-      raise StandardError.new(self.error)
-    end
+    raise ArgumentError.new("Train error: train number must not be empty") if self.number.empty?
+    raise ArgumentError.new("Train error: train number is not valid") if /[A-Fa-f0-9]{3}(-)?[A-Fa-f0-9]{2}/.match(self.number).nil?
   end
 end
-

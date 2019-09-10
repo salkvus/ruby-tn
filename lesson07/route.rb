@@ -5,11 +5,11 @@ class Route
   include InstanceCounter
   include InstanceValidator
 
-  attr_reader :stations, :error
+  attr_reader :stations
 
   def initialize(start_station, end_station)
     @stations = [start_station, end_station]
-    @error = ""
+    validate!
     register_instance
   end
 
@@ -40,18 +40,8 @@ class Route
   protected
   
   def validate!
-    @error = ""
-    if self.start_station.nil?
-      @error = "Route error: start station must not be empty"
-      raise StandardError.new(self.error)
-    end
-    if self.end_station.nil?
-      @error = "Route error: end station must not be empty"
-      raise StandardError.new(self.error)
-    end
-    if self.start_station == self.end_station
-      @error = "Route error: start station and end station must not be the same"
-      raise StandardError.new(self.error)
-    end
+    raise StandardError.new("Route error: start station must not be empty") if self.start_station.nil?
+    raise StandardError.new("Route error: end station must not be empty") if self.end_station.nil?
+    raise StandardError.new("Route error: start station and end station must not be the same") if self.start_station == self.end_station
   end
 end

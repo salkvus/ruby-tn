@@ -14,12 +14,13 @@ class Station
     @@stations
   end
 
-  attr_reader :name, :trains, :error
+  attr_reader :name, :trains
+  #:error
 
   def initialize(name)
     @name = name
     @trains = []
-    @error = ""
+    validate!
     @@stations << self
     register_instance
   end
@@ -47,11 +48,9 @@ class Station
   protected
   
   def validate!
-    @error = ""
     return unless self.name.empty?
     
-    @error = "Station error: station name must not be empty";
-    raise StandardError.new(self.error)
+    raise StandardError.new("Station error: station name must not be empty")
   end
 end
 
@@ -61,5 +60,4 @@ class StationDepartureException < StandardError
     puts error_message
     puts "Wrong train #{train.number} for station #{station.name}"
   end
-
 end

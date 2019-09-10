@@ -112,62 +112,95 @@ class Controller
   end
 
   def cmd_add_station_to_route
-    @interface.show_routes(@railroad.routes)
-    return if @railroad.routes.length.zero?
+    loop do
+      @interface.show_routes(@railroad.routes)
+      return if @railroad.routes.length.zero?
 
-    @interface.prompt_route_select
-    route = select_from_array(@railroad.routes)
-    return if route.nil?
-    
-    stations = @railroad.stations.select { |station| not route.stations.include?(station)}
-    return if stations.length.zero?
+      begin
+        @interface.prompt_route_select
+        route = select_from_array(@railroad.routes)
+        raise StandardError.new("Adding station for route error: route is not selected") if route.nil?
+        
+        stations = @railroad.stations.select { |station| not route.stations.include?(station)}
+        raise StandardError.new("Adding station for route error: no stations to add") if stations.length.zero?
 
-    @interface.show_stations(stations)
-    @interface.prompt_station_add_to_route
-    station = select_loop_from_array(stations)
-    return if station.nil?
+        @interface.show_stations(stations)
+        @interface.prompt_station_add_to_route
+        station = select_loop_from_array(stations)
+        raise StandardError.new("Adding station for route error: station is not selected") if station.nil?
 
-    @railroad.add_station_to_route(route, station)
+        @railroad.add_station_to_route(route, station)
+        break
+      rescue StandardError => e
+        puts e.message
+        @interface.prompt_retry_command("Добавить станцию к маршруту")
+        answer = @interface.enter_string
+        break unless answer.empty? or answer == "y"
+        @interface.clear
+      end
+    end
   end
 
   def cmd_delete_station_from_route
-    @interface.show_routes(@railroad.routes)
-    return if @railroad.routes.length.zero?
+    loop do
+      begin
+        @interface.show_routes(@railroad.routes)
+        raise StandardError.new("Deleting station from route error: no any routes") if @railroad.routes.length.zero?
 
-    @interface.prompt_route_select
-    route = select_from_array(@railroad.routes)
-    return if route.nil?
-    
-    @interface.show_stations(route.stations)
-    @interface.prompt_station_delete_from_route
-    station = select_loop_from_array(route.stations)
-    return if station.nil?
-    
-    @railroad.delete_station_from_route(route, station)
+        @interface.prompt_route_select
+        route = select_from_array(@railroad.routes)
+        raise StandardError.new("Deleting station from route error: route is not selected") if route.nil?
+        
+        @interface.show_stations(route.stations)
+        @interface.prompt_station_delete_from_route
+        station = select_loop_from_array(route.stations)
+        raise StandardError.new("Deleting station from route error: station is not selected") if station.nil?
+        
+        @railroad.delete_station_from_route(route, station)
+        break
+      rescue StandardError => e
+        puts e.message
+        @interface.prompt_retry_command("Убрать станцию из маршрута")
+        answer = @interface.enter_string
+        break unless answer.empty? or answer == "y"
+        @interface.clear
+      end
+    end
   end
   
   def cmd_assign_route_to_train
-    @interface.show_routes(@railroad.routes)
-    @interface.prompt_route_select
-    route = select_from_array(@railroad.routes)
-    return if route.nil?
+    loop do
+      begin
+        @interface.show_routes(@railroad.routes)
+        @interface.prompt_route_select
+        route = select_from_array(@railroad.routes)
+        raise StandardError.new("Assigning route to train error: route is not selected") if route.nil?
 
-    @interface.show_trains(@railroad.trains)
-    @interface.prompt_train_for_assign_route
-    train = select_loop_from_array(@railroad.trains)
-    return if train.nil?
+        @interface.show_trains(@railroad.trains)
+        @interface.prompt_train_for_assign_route
+        train = select_loop_from_array(@railroad.trains)
+        raise StandardError.new("Assigning route to train error: train is not selected") if train.nil?
 
-    @railroad.assign_route_to_train(route, train)
+        @railroad.assign_route_to_train(route, train)
+        break
+      rescue StandardError => e
+        puts e.message
+        @interface.prompt_retry_command("Назначить маршрут поезду")
+        answer = @interface.enter_string
+        break unless answer.empty? or answer == "y"
+        @interface.clear
+      end
+    end
   end
   
   def cmd_hook_train_wagon
-    @interface.show_trains(@railroad.trains)
-    @interface.prompt_train_to_hook_wagon
-    train = select_loop_from_array(@railroad.trains)
-    return if train.nil?
-
     loop do
       begin
+        @interface.show_trains(@railroad.trains)
+        @interface.prompt_train_to_hook_wagon
+        train = select_loop_from_array(@railroad.trains)
+        raise StandardError.new("Adding wagon to train error: train is not selected") if train.nil?
+
         @interface.prompt_wagon_number_select
         wagon_number = @interface.enter_number
         @railroad.hook_train_wagon(train, wagon_number)
@@ -183,14 +216,25 @@ class Controller
   end
 
   def cmd_unhook_train_wagon
-    @interface.show_trains(@railroad.trains)
-    @interface.prompt_train_to_unhook_wagon
-    train = select_loop_from_array(@railroad.trains)
-    return if train.nil?
+    loop do
+      begin
+        @interface.show_trains(@railroad.trains)
+        @interface.prompt_train_to_unhook_wagon
+        train = select_loop_from_array(@railroad.trains)
+        raise StandardError.new("Unhooking wagon from train error: train is not selected") if train.nil?
 
-    @interface.prompt_wagon_number_select
-    wagon_number = @interface.enter_number
-    @railroad.unhook_train_wagon(train, wagon_number)
+        @interface.prompt_wagon_number_select
+        wagon_number = @interface.enter_number
+        @railroad.unhook_train_wagon(train, wagon_number)
+        break
+      rescue StandardError => e
+        puts e.message
+        @interface.prompt_retry_command("Отцепить вагон от поезда")
+        answer = @interface.enter_string
+        break unless answer.empty? or answer == "y"
+        @interface.clear
+      end
+    end
   end
 
   def cmd_go_forward
@@ -244,7 +288,7 @@ class Controller
 
   def select_from_array(array)
     index = @interface.enter_number
-    return if index.negative? or index.zero?
+    return unless index.positive?
 
     array[index - 1]
   end
@@ -252,11 +296,11 @@ class Controller
   def select_loop_from_array(array)
     loop do
       index = @interface.enter_number
-      return array[index - 1] unless index.negative?
-      break if @interface.check_operation_cancel
+      return array[index - 1] if index.positive?
+      raise StandardError.new("Select from array error: invalid index")
+      #break if @interface.check_operation_cancel
     end
   end
 end
 
 Controller.new.run
-

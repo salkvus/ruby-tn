@@ -6,11 +6,12 @@ class Wagon
 
   WAGON_STATE = %i(hooked unhooked)
 
-  attr_reader :number, :state, :train, :error
+  attr_reader :number, :state, :train
  
   def initialize(number)
     @number = number
     @state = :unhooked
+    validate!
   end
 
   def train=(train)
@@ -24,11 +25,7 @@ class Wagon
   protected
   
   def validate!
-    @error = ""
-    if self.number.zero?
-      @error = "Wagon error: wagon number must not be zero"
-      raise StandardError.new(self.error)
-    end
+    raise StandardError.new("Wagon error: wagon number must not be zero") if self.number.zero?
   end
 
   private 
@@ -47,5 +44,4 @@ class Wagon
     @train = nil
     @state = :unhooked
   end
-
 end
