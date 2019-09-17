@@ -19,6 +19,12 @@ pass_train = railroad.trains[0]
 pass_train.route = railroad.routes[0]
 pass_train.hook_wagon(PassengerWagon.new(1, 48))
 pass_train.hook_wagon(PassengerWagon.new(2, 48))
+pass_train.wagons[0].occupy
+pass_train.wagons[0].occupy
+pass_train.wagons[1].occupy
+pass_train.wagons[1].occupy
+pass_train.wagons[1].occupy
+pass_train.wagons[0].free
 
 railroad.create_train(CargoTrain, "ttt-b2b")
 cargo_train = railroad.trains[1]
@@ -26,9 +32,13 @@ cargo_train.route = railroad.routes[1]
 cargo_train.hook_wagon(CargoWagon.new(1, 120))
 cargo_train.hook_wagon(CargoWagon.new(1, 160))
 cargo_train.hook_wagon(CargoWagon.new(3, 140))
+cargo_train.wagons[0].occupy(40)
+cargo_train.wagons[1].occupy(60)
+cargo_train.wagons[1].occupy(80)
+cargo_train.wagons[0].free(10)
 
 stations.each do |station|
-  station.process_trains do |train| 
+  station.process_each_train do |train|
     puts "Номер поезда: #{train.number}, тип: #{train.type}, кол.вагонов: #{train.wagons.length}"
     train.process_wagons do |wagon|
       if wagon.type == :cargo

@@ -3,30 +3,12 @@ require_relative 'Wagon'
 class PassengerWagon < Wagon
   include InstanceValidator
 
-  attr_reader :type, :full_capacity, :occupied
+  attr_reader :type
 
   def initialize(number, full_capacity)
     @type = :passenger
-    @full_capacity = full_capacity
-    @occupied = 0
-    super(number)
+    super
     validate!
-  end
-
-  def occupy
-    return unless self.occupied < self.full_capacity
-
-    @occupied += 1
-  end
-
-  def free
-    return unless self.occupied.zero?
-
-    @occupied -= 1
-  end
-
-  def rest
-    self.full_capacity - self.occupied
   end
 
   def str

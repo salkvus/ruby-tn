@@ -6,11 +6,13 @@ class Wagon
 
   WAGON_STATE = %i(hooked unhooked)
 
-  attr_reader :number, :state, :train
+  attr_reader :number, :state, :train, :full_capacity, :occupied
  
-  def initialize(number)
+  def initialize(number, full_capacity)
     @number = number
     @state = :unhooked
+    @full_capacity = full_capacity
+    @occupied = 0
     validate!
   end
 
@@ -20,6 +22,22 @@ class Wagon
     else
       hook(train)
     end
+  end
+
+  def occupy(capacity = 1)
+    return if capacity <= 0 || self.occupied + capacity > self.full_capacity
+
+    @occupied += capacity
+  end
+
+  def free(capacity = 1)
+    return if self.occupied.zero? || self.full_capacity - capacity < 0
+
+    @occupied -= capacity
+  end
+
+  def rest
+    self.full_capacity - self.occupied
   end
 
   protected

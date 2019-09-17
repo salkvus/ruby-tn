@@ -44,7 +44,7 @@ class Station
     trains.select { |train| train.type == type }
   end
 
-  def process_trains
+  def process_each_train
     trains.each { |train| yield(train)}
   end
 
