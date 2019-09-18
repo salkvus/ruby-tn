@@ -24,13 +24,13 @@ class Wagon
     end
   end
 
-  def occupy(capacity = 1)
+  def occupy(capacity)
     return if capacity <= 0 || self.occupied + capacity > self.full_capacity
 
     @occupied += capacity
   end
 
-  def free(capacity = 1)
+  def free(capacity)
     return if self.occupied.zero? || self.full_capacity - capacity < 0
 
     @occupied -= capacity
