@@ -11,6 +11,14 @@ class PassengerWagon < Wagon
     validate!
   end
 
+  def occupy
+    super(1)
+  end
+
+  def free
+    super(1)
+  end
+
   def str
     "Вагон: #{self.number}, тип: #{self.type}, кол. свободных мест: #{self.full_capacity - self.occupied}, кол.занятых мест: #{self.occupied}"
   end
